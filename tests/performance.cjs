@@ -15,7 +15,7 @@ const root = path.join(__dirname, '..');
       const errors = []; page.on('pageerror', e => errors.push(e.message));
       let html = fs.readFileSync(path.join(root, file), 'utf8');
       html = html.replace(/\}\)\(\);\s*<\/script>/, 'window.qa={runBestSearch,simulate,get P(){return P},get H(){return H}};})();</script>');
-      await page.setContent(html); await page.waitForFunction(() => window.qa && qa.H && document.querySelector("#gpuengine").textContent.includes("ตารางเซนเซอร์พร้อม"));
+      await page.setContent(html); await page.waitForFunction(() => window.qa && qa.H && document.querySelector("#gpuengine").textContent.includes("sensor table ready"));
       {
         const parity = await page.evaluate(() => {
           const full = qa.simulate(), compact = qa.simulate(true);

@@ -1,4 +1,4 @@
-<!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>RoboTracer Sim</title><meta name="description" content="โปรแกรมจำลองหุ่นยนต์ตามเส้น RoboTracer 16 เซนเซอร์ ปรับจูน PID และวิเคราะห์เส้นทางแบบเรียลไทม์"><meta name="claude:viewport-fit-sides" content="cover">
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>RoboTracer Sim</title><meta name="description" content="RoboTracer 16-sensor line-follower robot simulator with real-time PID tuning and path analysis"><meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Hallmark · checked: 2026-11-15 · genre: modern-minimal (inferred)
  * floor: 0 FAIL · shape: app screen
@@ -206,112 +206,112 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
       <h1>RoboTracer Sim</h1>
       <span class="badge-pro">PID Studio Pro</span>
     </div>
-    <button type="button" id="themetoggle" aria-label="สลับธีมสว่างหรือมืด">ธีม: อัตโนมัติ</button>
+    <button type="button" id="themetoggle" aria-label="Toggle light or dark theme">Theme: auto</button>
   </div>
-  <p class="sub" id="csub">สนาม Senior 240×140 ซม. (ตัดมาร์คออกแล้ว), เส้น 2 ซม., หุ่น 15×15 ซม., คำนวณ PID 200 Hz (ทุก 5 ms), เลื่อนแถบเวลาเพื่อดูตำแหน่งและค่า position ณ ขณะนั้น</p>
+  <p class="sub" id="csub">Senior track 240×140 cm (markers removed), 2 cm line, 15×15 cm robot, PID at 200 Hz (every 5 ms). Drag the time bar to see the position and position value at that moment</p>
 
   <div class="grid">
     <div class="panel stage">
       <div class="viewbar">
-        <label>ข้อมูล <select id="mode"><option value="sim">จำลองบนสนามที่เลือก</option><option value="utrack">จำลองบนสนามของข้อมูลจริง (ทางตรง + โค้ง U)</option><option value="real">ข้อมูลจริงจากหุ่น (รอบวิ่ง 1)</option></select></label>
-        <label class="coursesel">สนาม <select id="course"><option value="senior">Senior 240×140</option><option value="junior">Junior Maker 2023</option><option value="elem">TRRO Line Fast Elementary</option><option value="mid">TRRO Line Fast Middle School</option><option value="formula">Line Formula (สนามแข่งรถ)</option></select></label>
-        <label><input type="checkbox" id="follow"> ซูมตามหุ่น</label>
-        <label><input type="checkbox" id="trail" checked> แสดงเส้นทางของแถวเซนเซอร์</label>
-        <label>สี <select id="trailmode"><option value="err">ตาม |error|</option><option value="seg">ตามท่อน (ตรง/โค้ง)</option></select></label>
-        <label><input type="checkbox" id="showsens" checked> แสดงเซนเซอร์</label>
+        <label>Data <select id="mode"><option value="sim">Simulate on selected track</option><option value="utrack">Simulate on real-data track (straight + U-turn)</option><option value="real">Real robot data (run 1)</option></select></label>
+        <label class="coursesel">Track <select id="course"><option value="senior">Senior 240×140</option><option value="junior">Junior Maker 2023</option><option value="elem">TRRO Line Fast Elementary</option><option value="mid">TRRO Line Fast Middle School</option><option value="formula">Line Formula (race track)</option></select></label>
+        <label><input type="checkbox" id="follow"> Follow robot</label>
+        <label><input type="checkbox" id="trail" checked> Show sensor-row path</label>
+        <label>Color <select id="trailmode"><option value="err">By |error|</option><option value="seg">By segment (straight/curve)</option></select></label>
+        <label><input type="checkbox" id="showsens" checked> Show sensors</label>
       </div>
-      <canvas id="view" aria-label="มุมมองสนามและตำแหน่งหุ่นยนต์"></canvas>
+      <canvas id="view" aria-label="Track view and robot position"></canvas>
       <div class="scrub">
-        <input type="range" id="slider" min="0" max="1" value="0" step="1" aria-label="เวลา">
+        <input type="range" id="slider" min="0" max="1" value="0" step="1" aria-label="Time">
         <div class="row">
-          <button id="play" class="primary">▶ เล่น</button>
-          <button id="back" title="ถอย 1 สเต็ป (←)">◀ 5 ms</button>
-          <button id="fwd" title="ไป 1 สเต็ป (→)">5 ms ▶</button>
-          <select id="rate" aria-label="ความเร็วการเล่น">
+          <button id="play" class="primary">▶ Play</button>
+          <button id="back" title="Back 1 step (←)">◀ 5 ms</button>
+          <button id="fwd" title="Forward 1 step (→)">5 ms ▶</button>
+          <select id="rate" aria-label="Playback speed">
             <option value="0.1">0.1×</option><option value="0.25">0.25×</option><option value="1" selected>1×</option><option value="3">3×</option><option value="10">10×</option>
           </select>
           <span class="time" id="timelbl">0.000 s</span>
         </div>
       </div>
       <div class="row chartbar">
-        <span class="lbl">กราฟ</span>
-        <button id="zout" title="ซูมออก">−</button>
-        <button id="zin" title="ซูมเข้า (หรือเลื่อนล้อเมาส์บนกราฟ)">+</button>
-        <button id="zall">ทั้งหมด</button>
-        <label><input type="checkbox" id="cfollow" checked> เลื่อนตามเวลาที่เล่น</label>
-        <button id="ctall" title="ขยายความสูงกราฟ">สูง/เตี้ย</button>
+        <span class="lbl">Chart</span>
+        <button id="zout" title="Zoom out">−</button>
+        <button id="zin" title="Zoom in (or scroll the mouse wheel on the chart)">+</button>
+        <button id="zall">All</button>
+        <label><input type="checkbox" id="cfollow" checked> Follow playback</label>
+        <button id="ctall" title="Toggle chart height">Tall/short</button>
         <span class="lbl" id="zinfo"></span>
       </div>
-      <input type="range" id="pan" min="0" max="0" value="0" step="1" aria-label="เลื่อนช่วงกราฟ" disabled>
-      <canvas id="chart" aria-label="กราฟ position และคำสั่งมอเตอร์ตามเวลา"></canvas>
+      <input type="range" id="pan" min="0" max="0" value="0" step="1" aria-label="Pan chart range" disabled>
+      <canvas id="chart" aria-label="Chart of position and motor commands over time"></canvas>
     </div>
 
     <div class="side">
       <div class="panel card">
-        <h2>ค่า ณ เวลานี้</h2>
+        <h2>Values at this time</h2>
         <div class="bigrow">
-          <div class="big" id="vpos">750<small>position (0 ถึง 1500)</small></div>
+          <div class="big" id="vpos">750<small>position (0 to 1500)</small></div>
           <div class="big" id="verr">0<small>error = position − 750</small></div>
         </div>
         <div class="kv">
-          <span>ผลลัพธ์ PID</span><span id="vout">0</span>
-          <span>มอเตอร์ ซ้าย / ขวา</span><span id="vlr">0 / 0</span>
-          <span>ความเร็วหุ่น</span><span id="vspd">0 ซม./วิ</span>
-          <span>ตำแหน่ง x, y</span><span id="vxy">0, 0</span>
-          <span>ทิศหัน</span><span id="vth">0°</span>
-          <span>สถานะเส้น</span><span id="vline">เห็นเส้น</span>
+          <span>PID output</span><span id="vout">0</span>
+          <span>Motor left / right</span><span id="vlr">0 / 0</span>
+          <span>Robot speed</span><span id="vspd">0 cm/s</span>
+          <span>Position x, y</span><span id="vxy">0, 0</span>
+          <span>Heading</span><span id="vth">0°</span>
+          <span>Line status</span><span id="vline">Line seen</span>
         </div>
-        <div id="sbar" aria-label="ค่าเซนเซอร์ 16 ตัว"></div>
+        <div id="sbar" aria-label="16 sensor readings"></div>
         <p class="note simonly" id="lapinfo" style="color:var(--fg)"></p>
-        <p class="note">ซ้าย = เซนเซอร์ 0, ขวา = เซนเซอร์ 15 ค่า position คำนวณแบบเดียวกับ <code>calPoint()</code> (เซนเซอร์ละ 100 หน่วย)</p>
+        <p class="note">Left = sensor 0, right = sensor 15. Position is computed the same way as <code>calPoint()</code> (100 units per sensor)</p>
       </div>
 
       <div class="panel card">
-        <h2>ท่อนที่ตรวจได้ (ตัวตรวจเดียวกับในไลบรารี)</h2>
+        <h2>Detected segments (same detector as the library)</h2>
         <div id="seglist" class="seglist"></div>
         <details class="env">
-          <summary>ค่าของตัวตรวจ</summary>
+          <summary>Detector settings</summary>
           <div class="params" id="detparams"></div>
-          <p class="note">แถบใน/นอกคิดจาก |error| (หน่วยเซนเซอร์ละ 100) ทางตรง = อยู่ในแถบต่อเนื่องนาน "คงในแถบ" โค้ง = หลุดแถบนาน "คงนอกแถบ" เวลาโค้งวัดย้อนหลัง โค้งสั้นกว่าขั้นต่ำถือเป็นการแกว่ง</p>
+          <p class="note">The in/out bands use |error| (100 units per sensor). Straight = stays inside the band for "Hold in band"; curve = stays outside the band for "Hold out of band". Curve time is measured backwards; curves shorter than the minimum count as oscillation</p>
         </details>
       </div>
 
       <div class="panel card rronly">
-        <h2>บันทึกแล้วเล่นซ้ำ (ฟังก์ชัน LinePro)</h2>
-        <p class="note" style="margin-top:0">รัน ARecord ด้วยค่าจูนด้านล่างจนครบเส้นทางสนาม Senior แล้วรัน AReplay จากจุดเริ่มด้วยท่อนที่บันทึกได้ ใช้ตัวตรวจท่อน เวลารอ และเงื่อนไขจบท่อนเดียวกับไลบรารี</p>
-        <div class="params"><label for="rrview" style="grid-column:1/-1">แสดงรอบ</label><select id="rrview"><option value="0">รอบบันทึก</option><option value="1" selected>รอบเล่นซ้ำ</option></select></div>
-        <label style="display:flex;gap:6px;align-items:center;margin:8px 0 0;color:var(--muted);font-size:13px"><input type="checkbox" id="rrzones" checked> แสดงจุดที่เร่งได้บนสนาม</label>
+        <h2>Record and replay (LinePro functions)</h2>
+        <p class="note" style="margin-top:0">Runs ARecord with the tuning below over the full Senior track route, then runs AReplay from the start using the recorded segments. Uses the same segment detector, wait time and segment-end conditions as the library</p>
+        <div class="params"><label for="rrview" style="grid-column:1/-1">Show lap</label><select id="rrview"><option value="0">Record lap</option><option value="1" selected>Replay lap</option></select></div>
+        <label style="display:flex;gap:6px;align-items:center;margin:8px 0 0;color:var(--muted);font-size:13px"><input type="checkbox" id="rrzones" checked> Show speed-up zones on the track</label>
         <div class="params" id="rrparams" style="margin-top:6px"></div>
         <p class="note" id="rrinfo" style="color:var(--fg);white-space:pre-line"></p>
       </div>
 
       <div class="panel card utonly">
-        <h2>สนามจากข้อมูลจริง</h2>
-        <p class="note" style="margin-top:0">หุ่นจำลองคำนวณ PID เองบนเส้นที่ย้อนได้จากรอบวิ่งจริง (ใช้ค่าจูนด้านล่าง) เส้นประในกราฟคือ position ที่หุ่นจริงอ่านได้ ใช้เทียบว่าตัวจำลองตรงกับของจริงแค่ไหน</p>
+        <h2>Track from real data</h2>
+        <p class="note" style="margin-top:0">The simulated robot runs its own PID on the line reconstructed from a real run (using the tuning below). The dashed line in the chart is the position the real robot read; use it to see how closely the simulator matches reality</p>
         <p class="note" id="ustats"></p>
       </div>
 
       <div class="panel card realonly">
-        <h2>ข้อมูลจริงจากหุ่น</h2>
-        <p class="note" style="margin-top:0">ค่า position ที่หุ่นบันทึกจริงทุก 5 ms (speed 90, Kp 0.3, Kd 0.009) ตำแหน่งและทิศของหุ่นคำนวณย้อนจากแรงสั่งมอเตอร์ด้วยแบบจำลอง เส้นสีขาวคือเส้นที่เซนเซอร์เห็น วาดจากตำแหน่งที่อ่านได้</p>
-        <div class="params"><label for="p_loadReal">ตัวคูณความเร็ว (ปรับให้โค้ง U หมุนรวม ≈ −180°) ส่วนความไม่เท่ากันของมอเตอร์อยู่ในค่าจำลอง</label><input id="p_loadReal" type="number" step="any" value="0.46"></div>
+        <h2>Real robot data</h2>
+        <p class="note" style="margin-top:0">Position values logged by the real robot every 5 ms (speed 90, Kp 0.3, Kd 0.009). Robot position and heading are reconstructed from the motor commands using the model. The white line is the line the sensors saw, drawn from the readings</p>
+        <div class="params"><label for="p_loadReal">Speed multiplier (tuned so the U-turn totals ≈ −180°); motor imbalance is set in the sim parameters</label><input id="p_loadReal" type="number" step="any" value="0.46"></div>
         <p class="note" id="rstats"></p>
       </div>
 
       <div class="panel card simonly">
-        <h2>ค่าจูน (ตามโค้ดจริง)</h2>
-        <div class="tabs" id="tunemode" role="group" aria-label="โหมดค่าจูน"></div>
+        <h2>Tuning (as in the real code)</h2>
+        <div class="tabs" id="tunemode" role="group" aria-label="Tuning mode"></div>
         <p class="note" id="presetnote"></p>
         <p class="note" id="tuneengine" aria-live="polite"></p>
         <p class="note" id="gpuengine" aria-live="polite"></p>
-        <div class="params"><label for="grip" style="grid-column:1/-1">ความเหนียวยาง (μ)</label><select id="grip"></select></div>
+        <div class="params"><label for="grip" style="grid-column:1/-1">Tyre grip (μ)</label><select id="grip"></select></div>
         <div class="params" id="params" style="margin-top:6px"></div>
-        <p class="note">ชื่อและความหมายเหมือน <code>ARecord(speed, Kp, Ki, Kd, turnN, slowrage, …)</code> คำนวณใหม่อัตโนมัติเมื่อแก้ค่า</p>
+        <p class="note">Names and meanings match <code>ARecord(speed, Kp, Ki, Kd, turnN, slowrage, …)</code>. Recomputes automatically when a value changes</p>
         <details class="env">
-          <summary>สภาพหุ่น สนาม และเงื่อนไขเริ่มจำลอง</summary>
-          <div class="params"><label for="motor">มอเตอร์</label><select id="motor"></select></div>
+          <summary>Robot, track and start conditions</summary>
+          <div class="params"><label for="motor">Motor</label><select id="motor"></select></div>
           <div class="params" id="env"></div>
-          <p class="note">ตัวหุ่น 15×15 ซม. ล้อ Ø23 มม. และตำแหน่งแผง 16MuxV3 ตามไฟล์ออกแบบ ใช้แรงมอเตอร์และแรงเกาะยางร่วมกันในการเร่งและเลี้ยว น้ำหนักกดล้อเปลี่ยนตามการเร่ง หน้ายกกลับด้วยแรงโน้มถ่วง มวล จุดศูนย์ถ่วง ความเฉื่อย แรงกดพัดลม และช่วงรับแสงเป็นค่าตั้งต้นที่ปรับได้ ยังไม่ได้วัดยืนยันครบจากหุ่นจริง</p>
+          <p class="note">The 15×15 cm body, Ø23 mm wheels and 16MuxV3 board position follow the design files. Acceleration and turning combine motor force and tyre grip; wheel load shifts with acceleration and a lifted front returns under gravity. Mass, centre of gravity, inertia, fan downforce and sensor range are adjustable defaults, not yet fully measured on the real robot</p>
         </details>
       </div>
     </div>
@@ -328,10 +328,10 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   // W, H = size of the mat in cm. T = simulation length, sT = length used by the tuning search.
   var COURSES = {
     senior: { id: "senior", name: "Senior", W: 240, H: 140, start: { x: 170, y: 119.8, th: 0 }, rs: { x: 170, y: 119.8, hd: 0 }, closed: true, T: 40, sT: 30 },
-    junior: { id: "junior", name: "Junior Maker 2023 (390×240 ซม. จาก PDF เส้นทางบน: จากปลายเส้นซ้ายถึงปลายเส้นขวา)", W: 405, H: 240, start: { x: 70, y: 187.3, th: 180 }, closed: false, T: 80, sT: 70 },
-    elem: { id: "elem", name: "TRRO 2020 Line Fast Elementary (ขนาดประมาณ 339×226 ซม.)", W: 339, H: 226, start: { x: 181, y: 212.9, th: 0 }, closed: true, T: 60, sT: 50 },
-    formula: { id: "formula", name: "Line Formula (สนามแข่งรถ 390×240 ซม.)", W: 390, H: 240, start: { x: 152, y: 216.8, th: 0 }, closed: true, T: 60, sT: 50 },
-    mid: { id: "mid", name: "TRRO 2020 Line Fast Middle School (ขนาดประมาณ 339×226 ซม.)", W: 339, H: 226, start: { x: 158, y: 203.9, th: 0 }, closed: true, T: 60, sT: 50 }
+    junior: { id: "junior", name: "Junior Maker 2023 (390×240 cm from PDF, upper route: from the left line end to the right line end)", W: 405, H: 240, start: { x: 70, y: 187.3, th: 180 }, closed: false, T: 80, sT: 70 },
+    elem: { id: "elem", name: "TRRO 2020 Line Fast Elementary (approx. 339×226 cm)", W: 339, H: 226, start: { x: 181, y: 212.9, th: 0 }, closed: true, T: 60, sT: 50 },
+    formula: { id: "formula", name: "Line Formula (race track 390×240 cm)", W: 390, H: 240, start: { x: 152, y: 216.8, th: 0 }, closed: true, T: 60, sT: 50 },
+    mid: { id: "mid", name: "TRRO 2020 Line Fast Middle School (approx. 339×226 cm)", W: 339, H: 226, start: { x: 158, y: 203.9, th: 0 }, closed: true, T: 60, sT: 50 }
   };
   var COURSE = COURSES.senior;
   var DT = 0.005;                               // 200 Hz
@@ -348,14 +348,14 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   var N60_KT = V_RATED / (6000 * 5 * 2 * Math.PI / 60);            // N*m/A
   // Tyre grip levels (friction coefficient mu)
   var GRIPS = [
-    { name: "1 · ลื่น (ยางแข็ง) μ 1.0", mu: 1.0 },
-    { name: "2 · ปานกลาง μ 1.5", mu: 1.5 },
-    { name: "3 · เหนียว μ 2.0", mu: 2.0 },
-    { name: "4 · เหนียวมาก (ยางซิลิโคน) μ 3.0", mu: 3.0 }
+    { name: "1 · Slippery (hard tyre) μ 1.0", mu: 1.0 },
+    { name: "2 · Medium μ 1.5", mu: 1.5 },
+    { name: "3 · Grippy μ 2.0", mu: 2.0 },
+    { name: "4 · Very grippy (silicone tyre) μ 3.0", mu: 3.0 }
   ];
   var MOTORS = [
-    { name: "N60 ทด 1:5 · 6000 rpm · peak 10 A", rpm: 6000, fStall: N60_KT * 10 * 5 * GEAR_EFF / R_W },
-    { name: "N20 ทด 1:10 · 3000 rpm · 200 g·cm (ตัวอย่าง)", rpm: 3000, fStall: 0.2 * 9.81 * 0.01 / R_W }
+    { name: "N60 gear 1:5 · 6000 rpm · peak 10 A", rpm: 6000, fStall: N60_KT * 10 * 5 * GEAR_EFF / R_W },
+    { name: "N20 gear 1:10 · 3000 rpm · 200 g·cm (example)", rpm: 3000, fStall: 0.2 * 9.81 * 0.01 / R_W }
   ];
   var MASS = 0.2;                   // kg, robot mass (200 g)
   var WB = BODY - TIRE_W;           // 12 cm between the tyre centres
@@ -379,9 +379,9 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   ];
   // Robot / environment model used only by the simulator (not values in the library code)
   var ENV = [
-    ["load", "สัดส่วนแรงดันใช้งานมอเตอร์ (0–1)"], ["bias", "มอเตอร์ซ้ายแรงกว่าขวา (สัดส่วน)"], ["lat", "หน่วงอ่านเซนเซอร์→มอเตอร์ (ms)"],
-    ["dead", "ช่วงมอเตอร์ไม่ขยับ ขณะหมุนอยู่ (คำสั่ง)"], ["deadS", "ช่วงมอเตอร์ไม่ขยับ ตอนออกตัวจากหยุดนิ่ง (คำสั่ง)"], ["biasX", "มอเตอร์ไม่เท่ากันเพิ่มตอนออกตัว (สัดส่วน)"], ["tb", "ความไม่เท่ากันตอนออกตัวหายไปใน (ms)"], ["mass", "มวลรวม (kg)"], ["cgForward", "จุดศูนย์ถ่วงหน้าจากเพลาล้อ (ซม.)"], ["cgHeight", "จุดศูนย์ถ่วงสูงจากพื้น (ซม.)"], ["yawInertia", "โมเมนต์ความเฉื่อยรอบจุดศูนย์ถ่วง (kg·m²)"], ["wheelInertia", "ความเฉื่อยล้อ+โรเตอร์สะท้อนต่อข้าง (kg·m²)"], ["tyreStiff", "ความแข็งแรงยางตาม slip (N ต่อ m/s)"], ["posNoise", "ความสั่นของตำแหน่งเส้นที่เซนเซอร์วัด (หน่วย position, rms)"], ["rolling", "สัมประสิทธิ์ต้านการกลิ้ง"], ["downforce", "แรงกดพัดลมที่จุดศูนย์ถ่วง (N)"], ["sensorRange", "ระยะยกเซนเซอร์ที่สัญญาณเหลือ 37% (ซม.)"],
-    ["startWaitMs", "ช่วงรอก่อนเริ่ม PID ครั้งแรก (ms)"], ["T", "ระยะเวลาจำลอง (วินาที)"], ["sx", "เริ่ม x (ซม.)"], ["sy", "เริ่ม y (ซม.)"], ["sth", "ทิศเริ่ม (° 0 = ขวา)"]
+    ["load", "Motor voltage fraction (0–1)"], ["bias", "Left motor stronger than right (fraction)"], ["lat", "Sensor→motor latency (ms)"],
+    ["dead", "Motor deadband while turning (command)"], ["deadS", "Motor deadband when starting from rest (command)"], ["biasX", "Extra motor imbalance at start (fraction)"], ["tb", "Start imbalance decays over (ms)"], ["mass", "Total mass (kg)"], ["cgForward", "CG ahead of wheel axle (cm)"], ["cgHeight", "CG height above floor (cm)"], ["yawInertia", "Yaw moment of inertia about CG (kg·m²)"], ["wheelInertia", "Reflected wheel+rotor inertia per side (kg·m²)"], ["tyreStiff", "Tyre slip stiffness (N per m/s)"], ["posNoise", "Sensor line-position noise (position units, rms)"], ["rolling", "Rolling resistance coefficient"], ["downforce", "Fan downforce at CG (N)"], ["sensorRange", "Sensor lift height where signal drops to 37% (cm)"],
+    ["startWaitMs", "Wait before first PID step (ms)"], ["T", "Simulation duration (s)"], ["sx", "Start x (cm)"], ["sy", "Start y (cm)"], ["sth", "Start heading (°, 0 = right)"]
   ];
   var P = {}; for (var k0 in DEF) P[k0] = DEF[k0];
 
@@ -421,15 +421,15 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
       if (cb.checked) { cb.checked = false; maxMode = false; }
     });
     wrap.appendChild(cb);
-    wrap.appendChild(document.createTextNode("สปีด Auto (30–255) เมื่อกด เร็วสุด (ตามเวลา)"));
+    wrap.appendChild(document.createTextNode("Auto speed (30–255) when Fastest (lap time) is pressed"));
     spInp.insertAdjacentElement("afterend", wrap);
   })();
-  buildParams($("params"), [["accelRate", "AccelSet: อัตราเร่ง (0 = ปิด)"], ["accelFree", "AccelSet: ความเร็วที่เพิ่มได้ทันที"]]);
+  buildParams($("params"), [["accelRate", "AccelSet: acceleration rate (0 = off)"], ["accelFree", "AccelSet: instant speed step"]]);
   buildParams($("env"), ENV);
   // straight-segment speed is not adjustable: always full speed
   P.rrRatio = 0.75; P.rrAuto = false; P.recMs = 9800; P.recAuto = true; P.rrView = 1;
   function schedRR() { clearTimeout(simTimer); simTimer = setTimeout(runSim, 250); }
-  buildParams($("rrparams"), [["recMs", "ARecord: TotalTime (ms) เวลาที่บันทึก (0 = จนครบเส้นทาง)"], ["rrRatio", "AReplay: สัดส่วนทางตรง (1.0 = ทั้งทางตรงที่บันทึก ปรับจากการทดลองกับหุ่นจริง)"]], schedRR);
+  buildParams($("rrparams"), [["recMs", "ARecord: TotalTime (ms) recording time (0 = until the route is complete)"], ["rrRatio", "AReplay: straight fraction (1.0 = the whole recorded straight; tune from real-robot trials)"]], schedRR);
   (function () {
     var rMsInp = $("p_recMs");
     var cbRec = document.createElement("input"); cbRec.type = "checkbox"; cbRec.id = "recAuto"; cbRec.checked = true;
@@ -437,7 +437,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
       var wRec = document.createElement("label");
       wRec.style.cssText = "display:flex;align-items:center;gap:6px;font-size:12px;color:#cdd6f4;margin:4px 0 6px;cursor:pointer;";
       wRec.appendChild(cbRec);
-      wRec.appendChild(document.createTextNode("ปรับ TotalTime ออโต้ (เวลาจบรอบบันทึกจริง)"));
+      wRec.appendChild(document.createTextNode("Auto TotalTime (actual record-lap finish time)"));
       rMsInp.parentNode.insertAdjacentElement("afterend", wRec);
       cbRec.addEventListener("change", function () { P.recAuto = cbRec.checked; schedRR(); });
       rMsInp.addEventListener("input", function () { cbRec.checked = false; P.recAuto = false; });
@@ -446,7 +446,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     wrap.style.cssText = "display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:4px;cursor:pointer;";
     var cb = document.createElement("input"); cb.type = "checkbox"; cb.id = "rrAuto"; cb.checked = true;
     wrap.appendChild(cb);
-    wrap.appendChild(document.createTextNode("ปรับสัดส่วนทางตรงออโต้ (เลือกค่าที่เร็วสุดและผ่าน 3/3)"));
+    wrap.appendChild(document.createTextNode("Auto straight fraction (pick the fastest value that passes 3/3)"));
     $("rrparams").appendChild(wrap);
     cb.addEventListener("change", function () { P.rrAuto = cb.checked; schedRR(); });
     var rInp = $("p_rrRatio");
@@ -504,7 +504,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     if (c !== COURSE) return;
     spotField = c.sensorField || null; spotFieldMask = c.mask;
     gpuSensorStats = c.gpuStats || { backend: "cpu", workerSamples: 0 };
-    $("gpuengine").textContent = spotField && gpuSensorStats.backend === "gpu" ? "GPU " + gpuSensorStats.adapter + " · ตารางเซนเซอร์พร้อม · ไม่เติม noise" : spotField ? "CPU · ตารางเซนเซอร์พร้อม · GPU ยังไม่พร้อม (เปิดด้วย run-gpu.sh)" : "GPU ยังไม่พร้อม · เปิดด้วย run-gpu.sh · ไม่เติม noise";
+    $("gpuengine").textContent = spotField && gpuSensorStats.backend === "gpu" ? "GPU " + gpuSensorStats.adapter + " · sensor table ready · no noise added" : spotField ? "CPU · sensor table ready · GPU not available (start with run-gpu.sh)" : "GPU not available · start with run-gpu.sh · no noise added";
   }
   async function prepareSensorGpu(c) {
     if (c.sensorField) { showSensorGpu(c); return true; }
@@ -1055,15 +1055,15 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     }
     var segs = rc.seg.segs, nCurve = 0, info = { text: "", rec: recH };
     segs.forEach(function (g) { if (g.curve) nCurve++; });
-    var recTxt = "รอบบันทึก ARecord(speed " + par.speed + ", Kp " + par.Kp + ", Kd " + par.Kd + ", slowrage " + par.slow + ", TotalTime " + (P.recMs > 0 ? P.recMs + (P.recAuto ? " ออโต้" : "") : "ไม่จำกัด") + "): ";
+    var recTxt = "Record lap ARecord(speed " + par.speed + ", Kp " + par.Kp + ", Kd " + par.Kd + ", slowrage " + par.slow + ", TotalTime " + (P.recMs > 0 ? P.recMs + (P.recAuto ? " auto" : "") : "unlimited") + "): ";
     var H0 = recH;
     if (!recH.ok) {
-      info.text = recTxt + "ไม่ครบเส้นทาง (ไปได้ " + recH.route.progress.toFixed(0) + "%) จึงไม่เล่นซ้ำ ลองเพิ่ม TotalTime ค่าจูนอื่น หรือกด Best";
+      info.text = recTxt + "route not completed (reached " + recH.route.progress.toFixed(0) + "%), so no replay. Try a longer TotalTime, other tuning, or press Best";
       H0.rr = info; mask = svMask; return H0;
     }
-    var segTxt = segs.slice(0, 40).map(function (g) { return (g.curve ? "โค้ง " : "ตรง ") + g.ms; }).join(", ");
+    var segTxt = segs.slice(0, 40).map(function (g) { return (g.curve ? "curve " : "straight ") + g.ms; }).join(", ");
     var tot = 0; segs.forEach(function (g) { tot += g.ms; });
-    recTxt += "บันทึกครบที่ " + recH.timeS.toFixed(1) + " วินาที · " + segs.length + " ท่อน (" + nCurve + " โค้ง) หน่วย ms: " + segTxt + (segs.length > 40 ? " …" : "");
+    recTxt += "recorded in full at " + recH.timeS.toFixed(1) + " s · " + segs.length + " segments (" + nCurve + " curves), in ms: " + segTxt + (segs.length > 40 ? " …" : "");
     var rec = { segs: segs, speed: par.speed, bnd: [] };
     (function () { var t = 0; rec.bnd.push(recH.ridx[0] || 0); segs.forEach(function (g) { t += g.ms; rec.bnd.push(recH.ridx[Math.min(recH.N - 1, Math.round(t / 5))]); }); })();
     function replay(seed, dy, ratio) {
@@ -1089,19 +1089,19 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
       if ($("p_rrRatio")) $("p_rrRatio").value = bestR;
     }
     function describe(r) {
-      if (r.ok) return "ครบที่ " + r.timeS.toFixed(1) + " วินาที" + (r.route.finish < 0 ? " (เล่นครบทุกท่อนถึงปลายเส้นทางตามเวลาที่บันทึก)" : "") + " ไม่ย้อนกลับ ห่างเส้นทางสูงสุด " + r.route.maxOff.toFixed(1) + " ซม.";
-      if (r.route.fail >= 0) return "ออกนอกเส้นทางที่ " + (r.route.fail * DT).toFixed(1) + " วินาที (ไปได้ " + r.route.progress.toFixed(0) + "%)";
-      if (r.route.ended) return "เล่นครบทุกท่อนแล้วแต่ยังไม่ถึงจุดเริ่ม หยุดที่ " + r.route.progress.toFixed(0) + "% ของเส้นทาง";
-      return "ไม่ครบเส้นทางใน " + r.timeS.toFixed(0) + " วินาที (ไปได้ " + r.route.progress.toFixed(0) + "%)";
+      if (r.ok) return "finished at " + r.timeS.toFixed(1) + " s" + (r.route.finish < 0 ? " (played every segment to the end of the route within the recorded time)" : "") + ", no backtracking, max offset from route " + r.route.maxOff.toFixed(1) + " cm";
+      if (r.route.fail >= 0) return "left the route at " + (r.route.fail * DT).toFixed(1) + " s (reached " + r.route.progress.toFixed(0) + "%)";
+      if (r.route.ended) return "played every segment but did not reach the start; stopped at " + r.route.progress.toFixed(0) + "% of the route";
+      return "route not completed in " + r.timeS.toFixed(0) + " s (reached " + r.route.progress.toFixed(0) + "%)";
     }
     var repH = replay(2, 0);
-    var repTxt = "รอบเล่นซ้ำ AReplay(" + P.rrRatio + (P.rrAuto ? " ออโต้" : "") + ") AccelSet(" + P.accelRate + ", " + P.accelFree + ") หลังกดเล่นซ้ำ " + repH.learnLaps + " รอบ (หุ่นเรียนรู้ทางตรงที่เร่งได้ ทางตรง % ที่เรียนได้: " + repH.learned.join(", ") + "): " + describe(repH) + (repH.ok ? (repH.timeS < recH.timeS * 0.99 ? " (เร็วกว่ารอบบันทึก " + (100 * (1 - repH.timeS / recH.timeS)).toFixed(0) + "%)" : " (ไม่เร็วกว่ารอบบันทึก เพราะส่วนใหญ่ของสนามเป็นท่อนโค้ง)") : "");
+    var repTxt = "Replay lap AReplay(" + P.rrRatio + (P.rrAuto ? " auto" : "") + ") AccelSet(" + P.accelRate + ", " + P.accelFree + ") after " + repH.learnLaps + " replay laps (the robot learns which straights it can speed up on; learned straight %: " + repH.learned.join(", ") + "): " + describe(repH) + (repH.ok ? (repH.timeS < recH.timeS * 0.99 ? " (" + (100 * (1 - repH.timeS / recH.timeS)).toFixed(0) + "% faster than the record lap)" : " (not faster than the record lap because most of the track is curves)") : "");
     function summary() {
       var ok = 0, tt = 0;
       trials.forEach(function (t) { var r = replay(t[0], t[1]); if (r.ok) { ok++; tt += r.timeS; } });
-      return ok + " จาก 3 ครั้ง" + (ok ? " เฉลี่ย " + (tt / ok).toFixed(1) + " วินาที" : "");
+      return ok + " of 3 runs" + (ok ? ", average " + (tt / ok).toFixed(1) + " s" : "");
     }
-    var sumTxt = "เล่นซ้ำ 3 ครั้ง (ขยับจุดเริ่มตามแนวขวาง) ด้วยค่าที่ตั้ง: " + summary();
+    var sumTxt = "3 replays (start shifted sideways) with the current settings: " + summary();
     // Acceleration spots: the straights of the record lap, mapped onto the route (so they can be drawn on the course and compared with the replay lap)
     var M0 = MOTORS[P.motor | 0] || MOTORS[0], vFull = Math.PI * WHEEL_D * M0.rpm / 60 * P.load;        // cm/s at command 255
     var zones = [], tAcc = 0, zTxt = [];
@@ -1122,13 +1122,13 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     var gainReal = 0, gainPot = 0;
     zones.forEach(function (z, i) {
       gainReal += z.recMs - z.repMs; gainPot += Math.max(0, z.recMs - z.potMs);
-      zTxt.push((i + 1) + ") ยาว " + z.len.toFixed(0) + " ซม. · บันทึกใช้ " + z.recMs + " ms · เล่นซ้ำใช้ " + z.repMs + " ms (ความเร็วฐานสูงสุด " + z.peak + (z.fastMs ? ", เกินที่บันทึก " + z.fastMs + " ms" : ", ไม่เร็วกว่าที่บันทึก") + ") · ถ้าเต็ม 255 ตลอดช่วงในทางทฤษฎีเหลือราว " + z.potMs + " ms");
+      zTxt.push((i + 1) + ") length " + z.len.toFixed(0) + " cm · record " + z.recMs + " ms · replay " + z.repMs + " ms (peak base speed " + z.peak + (z.fastMs ? ", " + z.fastMs + " ms faster than recorded" : ", not faster than recorded") + ") · at full 255 throughout, theoretically about " + z.potMs + " ms");
     });
-    var zoneTxt = "จุดที่เร่งได้ (วงสีทองบนสนาม สีเขียวคือช่วงที่เล่นซ้ำเร่งเกินที่บันทึกจริง): " + (zones.length ? zones.length + " จุด\n" + zTxt.join("\n") + "\nรวม: ประหยัดได้จริง " + gainReal + " ms · ทางทฤษฎีสูงสุดราว " + Math.round(gainPot) + " ms (ไม่รวมเวลาเร่งและเบรก จึงเป็นเพดานที่หุ่นจริงทำไม่ถึง)" : "ไม่พบทางตรงยาวพอในรอบบันทึก (ต้องจูนให้นิ่งกว่านี้ หรือใช้ Best)");
+    var zoneTxt = "Speed-up zones (gold rings on the track; green is where the replay actually ran faster than recorded): " + (zones.length ? zones.length + " zones\n" + zTxt.join("\n") + "\nTotal: actual saving " + gainReal + " ms · theoretical maximum about " + Math.round(gainPot) + " ms (excludes acceleration and braking time, so the real robot cannot reach this ceiling)" : "No straight long enough in the record lap (tune for a steadier run, or use Best)");
     var maxPeak = 0; zones.forEach(function (z) { if (z.peak > maxPeak) maxPeak = z.peak; });
-    if (zones.length && maxPeak < par.speed + 20) zoneTxt += "\nตอนนี้ความเร็วฐานขึ้นไปได้สูงสุดแค่ " + maxPeak + " ในจุดเหล่านี้ เพราะทางตรงสั้นและสัดส่วนเวลาทางตรงน้อย ลองเพิ่มสัดส่วน (AccelSet จำกัดเฉพาะตอนออกตัวเท่านั้น)";
+    if (zones.length && maxPeak < par.speed + 20) zoneTxt += "\nBase speed currently peaks at only " + maxPeak + " in these zones because the straights are short and the straight fraction is low. Try a higher fraction (AccelSet only limits the start)";
     info.zones = zones;
-    info.text = recTxt + "\n\n" + repTxt + "\n\n" + zoneTxt + "\n\n" + sumTxt + "\n\nผลเป็นของตัวจำลอง ยังไม่ได้ลองกับหุ่นจริง (ไม่มีการตามเส้นต่อหลัง AReplay จึงนับว่าจบเมื่อถึงจุดเริ่ม)";
+    info.text = recTxt + "\n\n" + repTxt + "\n\n" + zoneTxt + "\n\n" + sumTxt + "\n\nSimulator results only, not yet tried on the real robot (there is no line following after AReplay, so the run counts as finished on reaching the start)";
     info.rep = repH;
     var out = P.rrView === 0 ? recH : repH;
     out.rr = info; mask = svMask; return out;
@@ -1330,11 +1330,11 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     H.segs.slice(0, 14).forEach(function (g) {
       var row = document.createElement("div"), sw = document.createElement("i"), tx = document.createElement("span");
       sw.style.background = g.curve ? "var(--accent)" : "var(--pos)";
-      tx.textContent = (g.curve ? "โค้ง " : "ตรง ") + (g.t0 / 1000).toFixed(2) + "–" + (g.t1 / 1000).toFixed(2) + " s (" + ((g.t1 - g.t0) / 1000).toFixed(2) + " s)";
+      tx.textContent = (g.curve ? "Curve " : "Straight ") + (g.t0 / 1000).toFixed(2) + "–" + (g.t1 / 1000).toFixed(2) + " s (" + ((g.t1 - g.t0) / 1000).toFixed(2) + " s)";
       row.appendChild(sw); row.appendChild(tx); box.appendChild(row);
     });
-    if (H.segs.length > 14) { var more = document.createElement("div"); more.textContent = "… อีก " + (H.segs.length - 14) + " ท่อน"; box.appendChild(more); }
-    var sum = document.createElement("div"); sum.style.color = "var(--muted)"; sum.textContent = "รวม " + nc + " โค้ง ใน " + (H.N * DT).toFixed(1) + " s"; box.appendChild(sum);
+    if (H.segs.length > 14) { var more = document.createElement("div"); more.textContent = "… " + (H.segs.length - 14) + " more segments"; box.appendChild(more); }
+    var sum = document.createElement("div"); sum.style.color = "var(--muted)"; sum.textContent = "Total " + nc + " curves in " + (H.N * DT).toFixed(1) + " s"; box.appendChild(sum);
   }
   function runSim() {
     if (mode !== "real" && !maskSenior) return;
@@ -1349,19 +1349,19 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
       var lostN = 0, rt = H.route;
       for (var q = 0; q < H.N; q++) lostN += H.lost[q];
       var txt;
-      if (rt.finish >= 0) txt = "ครบเส้นทาง (" + (routeLen / 100).toFixed(1) + " ม. " + (COURSE.closed ? "กลับจุดเริ่ม" : "ถึงปลายเส้น") + ") ที่ " + (rt.finish * DT).toFixed(1) + " วินาที · " + (rt.back > 2 ? "ย้อนกลับ " + rt.back + " ครั้ง (สูงสุด " + rt.backMax.toFixed(0) + " ซม.)" : "ไม่ย้อนกลับ") + " · ห่างเส้นทางสูงสุด " + rt.maxOff.toFixed(1) + " ซม.";
-      else if (H.ok && rt.fail < 0) txt = "เล่นครบทุกท่อนถึงปลายเส้นทางตามเวลาที่บันทึก (" + (H.N * DT).toFixed(1) + " วินาที) · ไม่ย้อนกลับ · ห่างเส้นทางสูงสุด " + rt.maxOff.toFixed(1) + " ซม.";
-      else if (rt.fail >= 0) txt = "ออกนอกเส้นทางที่ " + (rt.fail * DT).toFixed(1) + " วินาที (แถวเซนเซอร์ห่างเส้นทางเกิน 20 ซม. ที่ x " + rt.failX.toFixed(0) + ", y " + rt.failY.toFixed(0) + ") · ไปได้ " + rt.progress.toFixed(0) + "% ของเส้นทาง";
-      else txt = "ไม่ครบเส้นทางใน " + (H.N * DT).toFixed(0) + " วินาที · ไปได้ " + rt.progress.toFixed(0) + "%";
-      $("lapinfo").textContent = txt + " · หลุดเส้น " + lostN + " สเต็ป (" + (lostN * DT).toFixed(2) + " วินาที)" + (H.tracking ? " · เยื้องแนวเกิน 2 ซม. " + H.tracking.offTime.toFixed(2) + " วิ · หลุดในโค้งต่อเนื่องยาวสุด " + (1000 * H.tracking.curveLostMaxGap).toFixed(0) + " ms" : "");
+      if (rt.finish >= 0) txt = "Route complete (" + (routeLen / 100).toFixed(1) + " m, " + (COURSE.closed ? "back to start" : "reached line end") + ") at " + (rt.finish * DT).toFixed(1) + " s · " + (rt.back > 2 ? "backtracked " + rt.back + " times (max " + rt.backMax.toFixed(0) + " cm)" : "no backtracking") + " · max offset from route " + rt.maxOff.toFixed(1) + " cm";
+      else if (H.ok && rt.fail < 0) txt = "Played every segment to the end of the route within the recorded time (" + (H.N * DT).toFixed(1) + " s) · no backtracking · max offset from route " + rt.maxOff.toFixed(1) + " cm";
+      else if (rt.fail >= 0) txt = "Left the route at " + (rt.fail * DT).toFixed(1) + " s (sensor row more than 20 cm from the route at x " + rt.failX.toFixed(0) + ", y " + rt.failY.toFixed(0) + ") · reached " + rt.progress.toFixed(0) + "% of the route";
+      else txt = "Route not completed in " + (H.N * DT).toFixed(0) + " s · reached " + rt.progress.toFixed(0) + "%";
+      $("lapinfo").textContent = txt + " · lost the line " + lostN + " steps (" + (lostN * DT).toFixed(2) + " s)" + (H.tracking ? " · off the line by more than 2 cm " + H.tracking.offTime.toFixed(2) + " s · longest continuous line loss in curves " + (1000 * H.tracking.curveLostMaxGap).toFixed(0) + " ms" : "");
     }
     var dr = detectSegments(H.err, H.N); H.segs = dr.segs; H.flag = dr.flag;
     renderSegList();
     if (mode === "utrack") {
-      $("ustats").textContent = "เทียบกับของจริง: ต่างกัน rms " + uStats.rms.toFixed(0) + " หน่วย · error สูงสุด จำลอง " + uStats.peakSim.toFixed(0) + " ที่ " + uStats.tSim.toFixed(0) + " ms เทียบจริง " + uStats.peakReal.toFixed(0) + " ที่ " + uStats.tReal.toFixed(0) + " ms · หมุนรวม " + uStats.yaw.toFixed(0) + "°";
+      $("ustats").textContent = "Vs. real: rms difference " + uStats.rms.toFixed(0) + " units · peak error sim " + uStats.peakSim.toFixed(0) + " at " + uStats.tSim.toFixed(0) + " ms vs. real " + uStats.peakReal.toFixed(0) + " at " + uStats.tReal.toFixed(0) + " ms · total rotation " + uStats.yaw.toFixed(0) + "°";
     }
     if (mode === "real") {
-      $("rstats").textContent = "ทิศก่อนโค้ง (0.75 วินาที) " + realStats.yaw75.toFixed(0) + "° (ทางตรงควร ≈ 0°) · หมุนรวม " + realStats.yaw.toFixed(0) + "° · ระยะ " + realStats.dist.toFixed(0) + " ซม. · ความเร็วเฉลี่ย " + (realStats.avg / 100).toFixed(2) + " m/s";
+      $("rstats").textContent = "Heading before the curve (0.75 s) " + realStats.yaw75.toFixed(0) + "° (should be ≈ 0° on the straight) · total rotation " + realStats.yaw.toFixed(0) + "° · distance " + realStats.dist.toFixed(0) + " cm · average speed " + (realStats.avg / 100).toFixed(2) + " m/s";
     }
     slider.max = H.N - 1;
     if (vt1 - vt0 <= 1 || vt1 > H.N - 1 || H.N !== lastN) viewReset();
@@ -1371,7 +1371,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     slider.value = cur;
     $("timelbl").dataset.ms = Math.round(performance.now() - t0);
     renderAll();
-    if (!bestMode) $("presetnote").textContent = "จูนเอง · จำลองใหม่ด้วยยาง μ " + P.mu + " แล้ว · ค่าจูนปรับเองได้";
+    if (!bestMode) $("presetnote").textContent = "Manual tune · re-simulated with tyre μ " + P.mu + " · tuning is editable";
   }
 
   // ---------- drawing ----------
@@ -1424,7 +1424,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   function setCourse(c) {
     COURSE = c; spotField = c.sensorField || null; spotFieldMask = c.mask; maskSenior = c.mask; maskCanvas = c.canvas; routePts = c.route; routeLen = c.routeLen; straightMask = c.straight;
     view.style.aspectRatio = c.W + " / " + c.H;
-    $("csub").textContent = "สนาม " + c.name + ", เส้น 2 ซม., หุ่น 15×15 ซม., คำนวณ PID 200 Hz (ทุก 5 ms), เลื่อนแถบเวลาเพื่อดูตำแหน่งและค่า position ณ ขณะนั้น";
+    $("csub").textContent = "Track " + c.name + ", 2 cm line, 15×15 cm robot, PID at 200 Hz (every 5 ms). Drag the time bar to see the position and position value at that moment";
   }
 
   function drawView() {
@@ -1541,7 +1541,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     if (!H) return;
     var span = vt1 - vt0, full = span >= H.N - 1 - 0.5;
     pan.disabled = full; pan.max = Math.max(0, Math.round(H.N - 1 - span)); pan.value = Math.round(vt0);
-    $("zinfo").textContent = full ? "ทั้งหมด " + (H.N * DT).toFixed(0) + " วินาที" : "ช่วงที่เห็น " + (span * DT).toFixed(2) + " วินาที";
+    $("zinfo").textContent = full ? "All " + (H.N * DT).toFixed(0) + " s" : "Visible range " + (span * DT).toFixed(2) + " s";
   }
   function zoomAt(k, f) {
     if (!H) return;
@@ -1584,7 +1584,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
       return ty;
     }
     var typ = lane(padT, 0, 1500, [0, 750, 1500], "position");
-    var tys = lane(padT + laneH + gap, -255, 255, [-255, 0, 255], "คำสั่งมอเตอร์ ซ้าย (ส้ม) / ขวา (ฟ้า)");
+    var tys = lane(padT + laneH + gap, -255, 255, [-255, 0, 255], "Motor command left (orange) / right (blue)");
 
     function series(arr, ty, color) {
       g.save(); g.beginPath(); g.rect(x0, 0, x1 - x0, h); g.clip();
@@ -1645,16 +1645,16 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     $("verr").firstChild.nodeValue = String(H.err[k]);
     $("vout").textContent = H.out[k].toFixed(1);
     $("vlr").textContent = H.L[k] + " / " + H.R[k];
-    $("vspd").textContent = H.v[k].toFixed(1) + " ซม./วิ";
+    $("vspd").textContent = H.v[k].toFixed(1) + " cm/s";
     $("vxy").textContent = H.x[k].toFixed(1) + ", " + H.y[k].toFixed(1);
     var deg = (H.th[k] * 180 / Math.PI) % 360; if (deg < 0) deg += 360;
     $("vth").textContent = deg.toFixed(1) + "°";
     var lost = H.lost[k] === 1;
-    $("vline").textContent = lost ? "ไม่เห็นเส้น (ใช้ค่าล่าสุด)" : "เห็นเส้น";
+    $("vline").textContent = lost ? "Line lost (using last value)" : "Line seen";
     $("vline").className = lost ? "lost" : "";
     var cells = $("sbar").children;
     for (var i = 0; i < 16; i++) cells[i].firstChild.style.height = H.sens[k * 16 + i] + "%";
-    $("timelbl").textContent = (k * DT).toFixed(3) + " s  (สเต็ป " + k + ")";
+    $("timelbl").textContent = (k * DT).toFixed(3) + " s  (step " + k + ")";
     slider.value = k;
   }
 
@@ -1678,7 +1678,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     requestAnimationFrame(tick);
   }
   function setPlay(on) {
-    playing = on; $("play").textContent = on ? "⏸ หยุด" : "▶ เล่น";
+    playing = on; $("play").textContent = on ? "⏸ Pause" : "▶ Play";
     if (on) { if (cur >= H.N - 1) cur = 0; lastTs = performance.now(); acc = 0; requestAnimationFrame(tick); }
   }
   $("play").addEventListener("click", function () { if (H) setPlay(!playing); });
@@ -1726,12 +1726,12 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   // sensor bar cells
   var sb = $("sbar");
   for (var i = 0; i < 16; i++) {
-    var d = document.createElement("div"); d.appendChild(document.createElement("i")); d.title = "เซนเซอร์ " + i; sb.appendChild(d);
+    var d = document.createElement("div"); d.appendChild(document.createElement("i")); d.title = "Sensor " + i; sb.appendChild(d);
   }
   $("course").addEventListener("change", function () {
     var c = COURSES[$("course").value]; if (!c) return;
     if (playing) setPlay(false);
-    $("lapinfo").textContent = "กำลังโหลดสนาม …";
+    $("lapinfo").textContent = "Loading track …";
     ensureCourse(c, function () {
       setCourse(c);
       setInputs({ sx: c.start.x, sy: c.start.y, sth: c.start.th, T: c.T });
@@ -1756,9 +1756,9 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     document.documentElement.setAttribute("data-mode", mode);
     markRRBtn();
     if (mode === "rr") {
-      if (bestMode && bestMsg && (bestMsg.indexOf("กำลัง") === 0 || bestMsg.indexOf("รอ") === 0)) {
+      if (bestMode && bestMsg && /^(Preparing|Tuning|Recalculating|Waiting)/.test(bestMsg)) {
         cancelTuneWork(); clearTimeout(bestTimer); bestToken++;
-        setNote("บันทึก → เล่นซ้ำ: ใช้ค่าจูนปัจจุบัน (หยุดการจูนที่ค้างแล้ว)");
+        setNote("Record → replay: using the current tuning (pending tuning stopped)");
       }
       P.rrAuto = $("rrAuto") ? $("rrAuto").checked : false;
       P.recAuto = $("recAuto") ? $("recAuto").checked : false;
@@ -1781,7 +1781,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     if (!bestMode) { for (var key in manual) manual[key] = P[key]; }
     modeBtns.manual.setAttribute("aria-pressed", !bestMode ? "true" : "false");
     modeBtns.max.setAttribute("aria-pressed", bestMode ? "true" : "false");
-    $("presetnote").textContent = bestMode ? bestMsg : "จูนเอง: แก้ค่าในช่องด้านล่างได้อิสระ";
+    $("presetnote").textContent = bestMode ? bestMsg : "Manual tune: edit the fields below freely";
   }
   function setNote(t) { bestMsg = t; if (bestMode) $("presetnote").textContent = t; }
   function setInputs(v) { for (var key in v) { P[key] = v[key]; var inp = $("p_" + key); if (inp) inp.value = v[key]; } }
@@ -1864,7 +1864,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
           var passedTrial = h.route.finish >= 0 && h.route.back <= 2 && mm.lostMaxGap <= 0.05;
           run = { m: mm, progress: h.route.progress, passed: passedTrial,
             failure: passedTrial ? null : { trial: t + 1, offset: VOFF[t % VOFF.length][0], angle: VOFF[t % VOFF.length][1], time: h.N * DT,
-              reason: h.route.fail >= 0 ? "ออกนอกเส้นทาง" : h.route.back > 2 ? "ตัวตรวจพบการย้อนเส้นทาง" : mm.lostMaxGap > 0.05 ? "เซนเซอร์ไม่เห็นเส้นต่อเนื่องนานเกิน 50 ms" : "ไม่จบในเวลาจำลอง" } };
+              reason: h.route.fail >= 0 ? "left the route" : h.route.back > 2 ? "backtracking detected" : mm.lostMaxGap > 0.05 ? "sensors lost the line for more than 50 ms continuously" : "did not finish within the simulation time" } };
         }
         runs.push(run);
         var m = run.m, passed = run.passed;
@@ -1891,7 +1891,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     var workers = [], url = null, closed = false, timer = 0, batchId = 0, trialCache = new Map();
     var available = Math.max(1, Math.floor(navigator.hardwareConcurrency || 2));
     var count = requested === undefined ? available : Math.min(available, Math.max(1, Math.floor(requested) || 1));
-    function status() { $("tuneengine").textContent = workers.length ? "คำนวณด้วย CPU · " + workers.length + " workers / " + available + " เธรดที่เบราว์เซอร์เปิดให้" : "คำนวณด้วย CPU · 1 เธรด"; }
+    function status() { $("tuneengine").textContent = workers.length ? "Computing on CPU · " + workers.length + " workers / " + available + " threads available in the browser" : "Computing on CPU · 1 thread"; }
     function stopWorkers() {
       workers.forEach(function (worker) { worker.terminate(); }); workers = [];
       if (url) { URL.revokeObjectURL(url); url = null; }
@@ -2138,34 +2138,34 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
     var key = envKey(), hit = bestCache[key];
     if (hit) { finishBest(hit.good, hit.fallback, true); return; }
     cancelTuneWork(); var setupToken = ++bestToken;
-    setNote("กำลังเตรียมคำนวณสำหรับยาง μ " + P.mu + " …");
+    setNote("Preparing computation for tyre μ " + P.mu + " …");
     await prepareSensorGpu(COURSE);
     if (setupToken !== bestToken || key !== envKey() || !bestMode) return;
-    setNote("กำลังจูน · speed " + P.speed + " · ยาง μ " + P.mu + ": ทำเวลาต่อรอบ … 0%");
+    setNote("Tuning · speed " + P.speed + " · tyre μ " + P.mu + ": optimizing lap time … 0%");
     runBestSearch(function (good, fallback) {
       if (key !== envKey()) return;
       if (good) bestCache[key] = { good: good, fallback: fallback };
       else delete bestCache[key];
       finishBest(good, fallback);
-    }, function (pc) { setNote("กำลังจูน · speed " + P.speed + " · ยาง μ " + P.mu + ": ทำเวลาต่อรอบ … " + pc + "%"); }, maxMode);
+    }, function (pc) { setNote("Tuning · speed " + P.speed + " · tyre μ " + P.mu + ": optimizing lap time … " + pc + "%"); }, maxMode);
   }
   function finishBest(good, fallback, cached, sug) {
     if (!bestMode) return;
     var r = good || fallback;
-    if (!r) { setNote("ไม่พบค่าจูนที่ทดสอบได้ ลองตรวจจุดเริ่มและระยะเวลาจำลอง"); return; }
+    if (!r) { setNote("No testable tuning found. Check the start position and simulation duration"); return; }
     var c = r.c;
     if (good) setInputs({ speed: c[3], Kp: c[0], Ki: 0, Kd: c[1], turnN: -255, slow: c[2] });
-    var lead = (cached ? "ใช้ผลที่คำนวณไว้ · " : "") + "เร็วสุด" + (r.relaxed ? " [ผ่อนเกณฑ์ความทนทาน ขั้น " + r.relaxed + "]" : "") + " (ยาง μ " + P.mu + "): speed " + c[3] + ", Kp " + c[0] + ", Kd " + c[1] + ", slowrage " + c[2] + ". ";
-    if (good) setNote(lead + "วิ่งครบเส้นทางสนาม " + COURSE.name + " ไม่ย้อนกลับ " + good.V + " จาก " + good.V + " ครั้ง · เวลาเฉลี่ย " + good.t.toFixed(2) + " วินาที · เยื้องแนวเกิน 2 ซม. เฉลี่ย " + good.offTime.toFixed(2) + " วินาที/รอบ · ช่วงหลุดในโค้งยาวสุดเฉลี่ย " + (1000 * good.curveLostMaxGap).toFixed(0) + " ms · ห่างแนวโค้ง rms " + good.curveRms.toFixed(2) + " ซม. · เซนเซอร์ไม่เห็นเส้น " + good.lostTime.toFixed(3) + " วินาที/รอบ เลือกจากเวลาต่อรอบที่เร็วที่สุด ทดสอบจุดเริ่มและมุมหุ่น 12 แบบ ไม่เติม noise ผลเป็นของตัวจำลอง ยังไม่ได้ลองกับหุ่นจริง");
+    var lead = (cached ? "Using cached result · " : "") + "Fastest" + (r.relaxed ? " [robustness criteria relaxed, level " + r.relaxed + "]" : "") + " (tyre μ " + P.mu + "): speed " + c[3] + ", Kp " + c[0] + ", Kd " + c[1] + ", slowrage " + c[2] + ". ";
+    if (good) setNote(lead + "Completed the " + COURSE.name + " route without backtracking in " + good.V + " of " + good.V + " runs · average time " + good.t.toFixed(2) + " s · off the line by more than 2 cm on average " + good.offTime.toFixed(2) + " s/lap · average longest line loss in curves " + (1000 * good.curveLostMaxGap).toFixed(0) + " ms · curve offset rms " + good.curveRms.toFixed(2) + " cm · line lost " + good.lostTime.toFixed(3) + " s/lap. Chosen by fastest lap time, tested with 12 start positions and robot angles, no noise added. Simulator results only, not yet tried on the real robot");
     else {
-      var failed = r.failures && r.failures[0], detail = failed ? " · ครั้งที่ " + failed.trial + ": " + failed.reason + " ที่ " + failed.time.toFixed(2) + " วิ (เยื้องจุดเริ่ม " + failed.offset + " ซม., มุม " + failed.angle + "°)" : "";
-      setNote("คำนวณแล้ว · speed " + P.speed + " · ยาง μ " + P.mu + ": ยังไม่พบชุดที่ผ่านครบ " + VSEEDS.length + " ครั้ง ชุดทดลองที่ใกล้เคียงที่สุดผ่าน " + r.pass + "/" + r.V + " ครั้ง (Kp " + c[0] + ", Kd " + c[1] + ", slowrage " + c[2] + ")" + detail + " · ช่องค่าจูนยังคงค่าก่อนเริ่มค้นหา กด เร็วสุด ซ้ำเพื่อคำนวณใหม่ได้");
+      var failed = r.failures && r.failures[0], detail = failed ? " · Trial " + failed.trial + ": " + failed.reason + " at " + failed.time.toFixed(2) + " s (start offset " + failed.offset + " cm, angle " + failed.angle + "°)" : "";
+      setNote("Computed · speed " + P.speed + " · tyre μ " + P.mu + ": no set passed all " + VSEEDS.length + " runs yet. The closest candidate passed " + r.pass + "/" + r.V + " runs (Kp " + c[0] + ", Kd " + c[1] + ", slowrage " + c[2] + ")" + detail + " · the tuning fields keep their pre-search values; press Fastest again to recompute");
     }
     runSim();
   }
   var bestTimer = 0;
-  function scheduleBest() { cancelTuneWork(); clearTimeout(bestTimer); bestToken++; setNote("กำลังคำนวณใหม่ · speed " + P.speed + " · ยาง μ " + P.mu + " …"); bestTimer = setTimeout(startBest, 300); }
-  [["manual", "จูนเอง"], ["max", "เร็วสุด (ตามเวลา)"]].forEach(function (pair) {
+  function scheduleBest() { cancelTuneWork(); clearTimeout(bestTimer); bestToken++; setNote("Recalculating · speed " + P.speed + " · tyre μ " + P.mu + " …"); bestTimer = setTimeout(startBest, 300); }
+  [["manual", "Manual tune"], ["max", "Fastest (lap time)"]].forEach(function (pair) {
     var b = document.createElement("button"); b.type = "button"; b.textContent = pair[1]; b.setAttribute("aria-pressed", "false");
     b.addEventListener("click", function () {
       var id = pair[0];
@@ -2186,8 +2186,8 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   });
   // run mode toggle in the same row: record -> replay on the Senior course (uses whichever tuning mode is active for the record lap)
   (function () {
-    var b = document.createElement("button"); b.type = "button"; b.textContent = "บันทึก → เล่นซ้ำ"; b.setAttribute("aria-pressed", "false");
-    b.title = "รอบบันทึก ARecord แล้วรอบเล่นซ้ำ AReplay ด้วยค่าจูนที่เลือกอยู่";
+    var b = document.createElement("button"); b.type = "button"; b.textContent = "Record → replay"; b.setAttribute("aria-pressed", "false");
+    b.title = "Record lap with ARecord, then replay lap with AReplay, using the selected tuning";
     b.addEventListener("click", function () {
       if (mode === "rr") { $("mode").value = "sim"; applyMode("sim"); }
       else { if (mode !== "sim") $("mode").value = "sim"; applyMode("rr"); }
@@ -2198,7 +2198,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   TUNE.forEach(function (pair) { var inp = $("p_" + pair[0]); if (inp) inp.addEventListener("input", markTune); });
   markTune();
   $("trailmode").addEventListener("change", function () { trailBySeg = $("trailmode").value === "seg"; requestRender(); });
-  [["bandIn", "คงในแถบ: ค่าเฉลี่ย |error| ไม่เกิน"], ["bandOut", "นอกแถบ: ค่าเฉลี่ย |error| เกิน"], ["enterHold", "คงนอกแถบ (ms)"], ["exitHold", "คงในแถบ (ms)"], ["minCurve", "โค้งสั้นสุด (ms)"]].forEach(function (pair) {
+  [["bandIn", "In band: mean |error| at most"], ["bandOut", "Out of band: mean |error| above"], ["enterHold", "Hold out of band (ms)"], ["exitHold", "Hold in band (ms)"], ["minCurve", "Shortest curve (ms)"]].forEach(function (pair) {
     var l = document.createElement("label"); l.htmlFor = "d_" + pair[0]; l.textContent = pair[1];
     var i = document.createElement("input"); i.id = "d_" + pair[0]; i.type = "number"; i.step = "any"; i.value = DET[pair[0]];
     i.addEventListener("input", function () {
@@ -2215,7 +2215,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); height: 28px; curs
   }
 
   (function () {
-    var btn = $("themetoggle"), themes = ["", "light", "dark"], labels = { "": "ธีม: อัตโนมัติ", light: "ธีม: สว่าง", dark: "ธีม: มืด" };
+    var btn = $("themetoggle"), themes = ["", "light", "dark"], labels = { "": "Theme: auto", light: "Theme: light", dark: "Theme: dark" };
     function applyTheme(t) {
       if (t) document.documentElement.setAttribute("data-theme", t);
       else document.documentElement.removeAttribute("data-theme");

@@ -36,11 +36,11 @@ const assert = require("node:assert/strict");
     );
     await page.locator("#p_speed").fill("45");
     await page
-      .getByRole("button", { name: "เร็วสุด (ตามเวลา)", exact: true })
+      .getByRole("button", { name: "Fastest (lap time)", exact: true })
       .click();
     await page.waitForFunction(
       () =>
-        /12 จาก 12 ครั้ง/.test(
+        /12 of 12 runs/.test(
           document.querySelector("#presetnote").textContent,
         ),
       null,
@@ -67,11 +67,11 @@ const assert = require("node:assert/strict");
     ]);
     const start = Date.now();
     await page
-      .getByRole("button", { name: "เร็วสุด (ตามเวลา)", exact: true })
+      .getByRole("button", { name: "Fastest (lap time)", exact: true })
       .click();
     await page.waitForFunction(
       () =>
-        /^เร็วสุด .*12 จาก 12 ครั้ง/.test(
+        /^Fastest .*12 of 12 runs/.test(
           document.querySelector("#presetnote").textContent,
         ),
       null,
@@ -117,17 +117,17 @@ const assert = require("node:assert/strict");
     );
     await fallback.locator("#p_speed").fill("45");
     await fallback
-      .getByRole("button", { name: "เร็วสุด (ตามเวลา)", exact: true })
+      .getByRole("button", { name: "Fastest (lap time)", exact: true })
       .click();
     await fallback.waitForFunction(
       () =>
-        /12 จาก 12 ครั้ง/.test(
+        /12 of 12 runs/.test(
           document.querySelector("#presetnote").textContent,
         ),
       null,
       { timeout: 120000 },
     );
-    assert.match(await fallback.locator("#tuneengine").textContent(), /1 เธรด/);
+    assert.match(await fallback.locator("#tuneengine").textContent(), /1 thread/);
     assert.equal(await fallback.locator("#p_Kp").inputValue(), fixedTune[0]);
     assert.equal(await fallback.locator("#p_Kd").inputValue(), fixedTune[1]);
     console.log("Worker crash fallback: same 12/12 tune on one thread");
@@ -153,11 +153,11 @@ const assert = require("node:assert/strict");
     );
     await validationFallback.locator("#p_speed").fill("45");
     await validationFallback
-      .getByRole("button", { name: "เร็วสุด (ตามเวลา)", exact: true })
+      .getByRole("button", { name: "Fastest (lap time)", exact: true })
       .click();
     await validationFallback.waitForFunction(
       () =>
-        /12 จาก 12 ครั้ง/.test(
+        /12 of 12 runs/.test(
           document.querySelector("#presetnote").textContent,
         ),
       null,
@@ -165,7 +165,7 @@ const assert = require("node:assert/strict");
     );
     assert.match(
       await validationFallback.locator("#tuneengine").textContent(),
-      /1 เธรด/,
+      /1 thread/,
     );
     assert.equal(
       await validationFallback.locator("#p_Kp").inputValue(),
