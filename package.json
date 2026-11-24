@@ -1,0 +1,19 @@
+{
+  "name": "linesim",
+  "private": true,
+  "scripts": {
+    "test": "node tests/autotune.cjs",
+    "bench": "node tests/performance.cjs",
+    "test:workers": "node tests/workers.cjs",
+    "test:objective": "node tests/objective.cjs",
+    "test:gpu": "node tests/gpu.cjs",
+    "test:optimization": "node tests/optimization.cjs",
+    "test:accel": "node tests/accel.cjs",
+    "test:grip": "node tests/grip.cjs",
+    "test:firmware-timing": "node tests/firmware-timing.cjs",
+    "test:physics": "node tests/physics.cjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.58.0"
+  }
+}
